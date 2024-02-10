@@ -8,5 +8,5 @@
     }
   },
   "include": ["src", "tailwind.config.ts"],
-  "exclude": ["node_modules", "dist", "postcss.config.js"]
+  "exclude": ["node_modules", "dist", "postcss.config.cjs"]
 }

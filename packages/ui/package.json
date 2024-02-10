@@ -3,9 +3,9 @@
   "version": "0.0.0",
   "private": true,
   "exports": {
-    "./button": "./src/button.tsx",
-    "./card": "./src/card.tsx",
-    "./code": "./src/code.tsx"
+    "./globals.css": "./src/globals.css",
+    "./tailwind.config": "./tailwind.config.ts",
+    "./postcss.config": "./postcss.config.cjs"
   },
   "scripts": {
     "lint": "eslint . --max-warnings 0",
