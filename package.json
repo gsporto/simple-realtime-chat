@@ -1,5 +1,5 @@
 {
-  "name": "simple-reatime-chat",
+  "name": "simple-realtime-chat",
   "private": true,
   "scripts": {
     "build": "turbo build",
