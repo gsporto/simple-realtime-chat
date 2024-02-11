@@ -1,9 +1,11 @@
+import { Header } from "@repo/ui/organisms-header";
+
 function App() {
   return (
-    <>
-      <h1>Hello World</h1>
-    </>
-  )
+    <div>
+      <Header />
+    </div>
+  );
 }
 
-export default App
+export default App;
