@@ -1,4 +1,4 @@
-import { createContext, useContext, useEffect, useRef, useState } from 'react';
+import { createContext, useEffect, useRef, useState } from 'react';
 import { io } from 'socket.io-client';
 import { User } from '@repo/types';
 
@@ -10,9 +10,8 @@ type UserMessageProviderState = {
   users: Array<User>;
 };
 
-const UserMessageProviderContext = createContext<UserMessageProviderState>(
-  {} as UserMessageProviderState,
-);
+export const UserMessageProviderContext =
+  createContext<UserMessageProviderState>({} as UserMessageProviderState);
 
 const socket = io('localhost:3000', {
   autoConnect: false,
@@ -63,12 +62,3 @@ export function UserMessageProvider({ children }: UserMessageProviderProps) {
     </UserMessageProviderContext.Provider>
   );
 }
-
-export const useUserMessage = () => {
-  const context = useContext(UserMessageProviderContext);
-
-  if (context === undefined)
-    throw new Error('useUserMessage must be used within a UserMessageProvider');
-
-  return context;
-};

@@ -1,9 +1,11 @@
-import { MessagesHeader } from '@repo/ui/messagesHeader';
-import { MessagesFooter } from '@repo/ui/messagesFooter';
-import { MessagesMain } from '@repo/ui/messagesMain';
-import { UsersHeader } from '@repo/ui/usersHeader';
-import { UserList } from '@repo/ui/usersList';
-import { useUserMessage } from './context/userMessage';
+import {
+  MessagesHeader,
+  MessagesMain,
+  MessagesFooter,
+  UsersHeader,
+  UserList,
+} from '@repo/ui/components';
+import { useUserMessage } from '@repo/ui/hooks';
 
 function App() {
   const { users } = useUserMessage();
