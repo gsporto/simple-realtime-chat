@@ -6,7 +6,8 @@
     "./globals.css": "./src/globals.css",
     "./tailwind.config": "./tailwind.config.ts",
     "./postcss.config": "./postcss.config.cjs",
-    "./organisms-header": "./src/components/organisms/header.tsx"
+    "./organisms-header": "./src/components/organisms/header.tsx",
+    "./messageFooter": "./src/components/organisms/messageFooter.tsx"
   },
   "scripts": {
     "lint": "eslint . --max-warnings 0",
