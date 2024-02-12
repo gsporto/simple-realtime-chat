@@ -1,5 +1,5 @@
-import { Avatar, AvatarFallback, AvatarImage } from "@ui/components/ui/avatar";
-import { ArrowLeftIcon, DotsVerticalIcon } from "@radix-ui/react-icons";
+import { Avatar, AvatarFallback, AvatarImage } from '@ui/components/ui/avatar';
+import { ArrowLeftIcon, DotsVerticalIcon } from '@radix-ui/react-icons';
 
 function Header() {
   return (

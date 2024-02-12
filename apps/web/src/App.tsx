@@ -1,4 +1,4 @@
-import { Header } from "@repo/ui/organisms-header";
+import { Header } from '@repo/ui/organisms-header';
 
 function App() {
   return (
