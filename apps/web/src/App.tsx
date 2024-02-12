@@ -1,13 +1,13 @@
-import { Header } from '@repo/ui/organisms-header';
-import { MessageFooter } from '@repo/ui/messageFooter';
+import { MessagesHeader } from '@repo/ui/messagesHeader';
+import { MessagesFooter } from '@repo/ui/messagesFooter';
 import { MessagesMain } from '@repo/ui/messagesMain';
 
 function App() {
   return (
     <div className="flex flex-col h-lvh">
-      <Header />
+      <MessagesHeader />
       <MessagesMain />
-      <MessageFooter />
+      <MessagesFooter />
     </div>
   );
 }

@@ -1,7 +1,7 @@
 import { Avatar, AvatarFallback, AvatarImage } from '@ui/components/ui/avatar';
 import { ArrowLeftIcon, DotsVerticalIcon } from '@radix-ui/react-icons';
 
-function Header() {
+function MessagesHeader() {
   return (
     <div>
       <header className="flex items-center h-16 space-x-3 px-3 border-b">
@@ -17,4 +17,4 @@ function Header() {
   );
 }
 
-export { Header };
+export { MessagesHeader };

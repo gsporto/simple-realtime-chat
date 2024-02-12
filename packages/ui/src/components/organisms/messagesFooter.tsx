@@ -1,7 +1,7 @@
 import { PaperPlaneIcon } from '@radix-ui/react-icons';
 import { Input } from '@ui/components/ui/input';
 
-function MessageFooter() {
+function MessagesFooter() {
   return (
     <footer className="flex items-center h-16 space-x-3 px-3 border-t">
       <Input />
@@ -10,4 +10,4 @@ function MessageFooter() {
   );
 }
 
-export { MessageFooter };
+export { MessagesFooter };

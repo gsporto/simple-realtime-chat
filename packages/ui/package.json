@@ -6,8 +6,8 @@
     "./globals.css": "./src/globals.css",
     "./tailwind.config": "./tailwind.config.ts",
     "./postcss.config": "./postcss.config.cjs",
-    "./organisms-header": "./src/components/organisms/header.tsx",
-    "./messageFooter": "./src/components/organisms/messageFooter.tsx",
+    "./messagesHeader": "./src/components/organisms/messagesHeader.tsx",
+    "./messagesFooter": "./src/components/organisms/messagesFooter.tsx",
     "./messagesMain": "./src/components/organisms/messagesMain.tsx"
   },
   "scripts": {
