@@ -2,30 +2,30 @@ import { createContext, useContext, useEffect, useRef, useState } from 'react';
 import { io } from 'socket.io-client';
 import { User } from '@repo/types';
 
-type SocketProviderProps = {
+type UserMessageProviderProps = {
   children: React.ReactNode;
 };
 
-type SocketProviderState = {
+type UserMessageProviderState = {
   users: Array<User>;
 };
 
-const SocketProviderContext = createContext<SocketProviderState>(
-  {} as SocketProviderState,
+const UserMessageProviderContext = createContext<UserMessageProviderState>(
+  {} as UserMessageProviderState,
 );
 
 const socket = io('localhost:3000', {
   autoConnect: false,
 });
 
-export function SocketProvider({ children }: SocketProviderProps) {
+export function UserMessageProvider({ children }: UserMessageProviderProps) {
   const firstRender = useRef(true);
   const [user, setUser] = useState<User>(() => {
     const id = sessionStorage.getItem('userId') || Date.now().toString();
     sessionStorage.setItem('userId', id);
     return {
       id,
-      name: '',
+      name: 'a',
       image: `https://picsum.photos/seed/${id}/250/250`,
     };
   });
@@ -58,17 +58,17 @@ export function SocketProvider({ children }: SocketProviderProps) {
   }, [user.id, user.image, user.name]);
 
   return (
-    <SocketProviderContext.Provider value={{ users }}>
+    <UserMessageProviderContext.Provider value={{ users }}>
       {children}
-    </SocketProviderContext.Provider>
+    </UserMessageProviderContext.Provider>
   );
 }
 
-export const useSocket = () => {
-  const context = useContext(SocketProviderContext);
+export const useUserMessage = () => {
+  const context = useContext(UserMessageProviderContext);
 
   if (context === undefined)
-    throw new Error('useSocket must be used within a SocketProvider');
+    throw new Error('useUserMessage must be used within a UserMessageProvider');
 
   return context;
 };

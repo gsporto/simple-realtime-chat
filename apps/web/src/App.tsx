@@ -3,10 +3,10 @@ import { MessagesFooter } from '@repo/ui/messagesFooter';
 import { MessagesMain } from '@repo/ui/messagesMain';
 import { UsersHeader } from '@repo/ui/usersHeader';
 import { UserList } from '@repo/ui/usersList';
-import { useSocket } from './context/socket';
+import { useUserMessage } from './context/userMessage';
 
 function App() {
-  const { users } = useSocket();
+  const { users } = useUserMessage();
   return (
     <div className="flex h-lvh">
       <div className="flex flex-1 flex-col">
