@@ -8,7 +8,9 @@
     "./postcss.config": "./postcss.config.cjs",
     "./messagesHeader": "./src/components/organisms/messagesHeader.tsx",
     "./messagesFooter": "./src/components/organisms/messagesFooter.tsx",
-    "./messagesMain": "./src/components/organisms/messagesMain.tsx"
+    "./messagesMain": "./src/components/organisms/messagesMain.tsx",
+    "./usersHeader": "./src/components/organisms/usersHeader.tsx",
+    "./usersList": "./src/components/organisms/usersList.tsx"
   },
   "scripts": {
     "lint": "eslint . --max-warnings 0",
