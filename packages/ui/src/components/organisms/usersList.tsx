@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import { User } from '../ui/user';
 import { User as UserType } from '@repo/types';
 
@@ -6,6 +7,12 @@ type UserListProps = {
 };
 
 function UserList({ users }: UserListProps) {
+  const [selected, setSelected] = useState('');
+
+  function handleSelect(id: string) {
+    setSelected(id);
+  }
+
   return (
     <div>
       {users.map(user => (
@@ -15,6 +22,8 @@ function UserList({ users }: UserListProps) {
           image={user.image}
           text="Nunc ut euismod est, at lacinia risus."
           date="Yesterday"
+          select={selected === user.id}
+          onClick={() => handleSelect(user.id)}
         />
       ))}
     </div>
