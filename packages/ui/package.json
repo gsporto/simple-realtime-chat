@@ -6,6 +6,7 @@
     "./globals.css": "./src/globals.css",
     "./tailwind.config": "./tailwind.config.ts",
     "./postcss.config": "./postcss.config.cjs",
+    "./theme-provider": "./src/components/theme-provider.tsx",
     "./messagesHeader": "./src/components/organisms/messagesHeader.tsx",
     "./messagesFooter": "./src/components/organisms/messagesFooter.tsx",
     "./messagesMain": "./src/components/organisms/messagesMain.tsx",
