@@ -1,13 +1,26 @@
-import { createContext, useEffect, useRef, useState } from 'react';
+import {
+  Dispatch,
+  ReactNode,
+  SetStateAction,
+  createContext,
+  useEffect,
+  useRef,
+  useState,
+} from 'react';
 import { io } from 'socket.io-client';
 import { User } from '@repo/types';
 
 type UserMessageProviderProps = {
-  children: React.ReactNode;
+  children: ReactNode;
 };
 
 type UserMessageProviderState = {
-  users: Array<User>;
+  usersList: Array<User>;
+  user: User;
+  setUser: Dispatch<SetStateAction<User>>;
+  selectedUserId: string;
+  setSelectedUserId: Dispatch<SetStateAction<string>>;
+  selectedUser: User;
 };
 
 export const UserMessageProviderContext =
@@ -19,6 +32,7 @@ const socket = io('localhost:3000', {
 
 export function UserMessageProvider({ children }: UserMessageProviderProps) {
   const firstRender = useRef(true);
+
   const [user, setUser] = useState<User>(() => {
     const id = sessionStorage.getItem('userId') || Date.now().toString();
     sessionStorage.setItem('userId', id);
@@ -28,7 +42,15 @@ export function UserMessageProvider({ children }: UserMessageProviderProps) {
       image: `https://picsum.photos/seed/${id}/250/250`,
     };
   });
-  const [users, setUsers] = useState<Array<User>>([]);
+
+  const [usersList, setUsersList] = useState<Array<User>>([]);
+  const [selectedUserId, setSelectedUserId] = useState('');
+
+  const selectedUser = usersList.find(user => user.id === selectedUserId) || {
+    id: '',
+    image: '',
+    name: '',
+  };
 
   useEffect(() => {
     if (firstRender.current && user.name) {
@@ -42,7 +64,7 @@ export function UserMessageProvider({ children }: UserMessageProviderProps) {
       socket.connect();
 
       socket.on('users', (data: Array<User>) => {
-        setUsers(
+        setUsersList(
           data.filter(value => {
             return value.id !== user.id;
           }),
@@ -57,7 +79,16 @@ export function UserMessageProvider({ children }: UserMessageProviderProps) {
   }, [user.id, user.image, user.name]);
 
   return (
-    <UserMessageProviderContext.Provider value={{ users }}>
+    <UserMessageProviderContext.Provider
+      value={{
+        usersList,
+        user,
+        setUser,
+        selectedUserId,
+        setSelectedUserId,
+        selectedUser,
+      }}
+    >
       {children}
     </UserMessageProviderContext.Provider>
   );

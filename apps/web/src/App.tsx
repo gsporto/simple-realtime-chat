@@ -1,4 +1,3 @@
-import { useUserMessage } from './hooks/useUserMessage';
 import {
   MessagesFooter,
   MessagesHeader,
@@ -6,20 +5,25 @@ import {
   UserList,
   UsersHeader,
 } from './components';
+import { useUserMessage } from './hooks';
 
 function App() {
-  const { users } = useUserMessage();
+  const { selectedUserId } = useUserMessage();
   return (
     <div className="flex h-lvh">
       <div className="flex flex-1 flex-col">
         <UsersHeader />
-        <UserList users={users} />
+        <UserList />
       </div>
       <div className="border-l"></div>
       <div className="flex flex-[2] flex-col">
-        <MessagesHeader />
-        <MessagesMain />
-        <MessagesFooter />
+        {selectedUserId ? (
+          <>
+            <MessagesHeader />
+            <MessagesMain />
+            <MessagesFooter />
+          </>
+        ) : null}
       </div>
     </div>
   );
