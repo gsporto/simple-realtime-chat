@@ -1,11 +1,11 @@
+import { useUserMessage } from './hooks/useUserMessage';
 import {
+  MessagesFooter,
   MessagesHeader,
   MessagesMain,
-  MessagesFooter,
-  UsersHeader,
   UserList,
-} from '@repo/ui/components';
-import { useUserMessage } from '@repo/ui/hooks';
+  UsersHeader,
+} from './components';
 
 function App() {
   const { users } = useUserMessage();

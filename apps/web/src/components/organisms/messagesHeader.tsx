@@ -1,4 +1,4 @@
-import { Avatar, AvatarFallback, AvatarImage } from '@ui/components/ui/avatar';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { ArrowLeftIcon, DotsVerticalIcon } from '@radix-ui/react-icons';
 
 function MessagesHeader() {

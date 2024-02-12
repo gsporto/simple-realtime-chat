@@ -1,4 +1,4 @@
-import { Message } from '@ui/components/ui/message';
+import { Message } from '@/components/ui/message';
 
 function MessagesMain() {
   return (

@@ -1,5 +1,5 @@
 import { PaperPlaneIcon } from '@radix-ui/react-icons';
-import { Input } from '@ui/components/ui/input';
+import { Input } from '@/components/ui/input';
 
 function MessagesFooter() {
   return (
