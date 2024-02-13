@@ -1,6 +1,7 @@
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { useUserMessage } from '@/hooks';
 import { DotsVerticalIcon } from '@radix-ui/react-icons';
+import { Button } from '../ui/button';
 
 function UsersHeader() {
   const { currentUser } = useUserMessage();
@@ -10,7 +11,9 @@ function UsersHeader() {
         <AvatarImage src={currentUser.image} alt={currentUser.name} />
         <AvatarFallback>{currentUser.name.at(0)}</AvatarFallback>
       </Avatar>
-      <DotsVerticalIcon className="h-5 w-6" />
+      <Button variant="ghost" size="icon">
+        <DotsVerticalIcon className="h-5 w-6" />
+      </Button>
     </header>
   );
 }
