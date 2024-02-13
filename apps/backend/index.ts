@@ -48,8 +48,8 @@ io.on('connection', socket => {
     userName: query.userName,
   });
 
-  io.to(socket.id).emit('users', parseUsersList());
-  socket.emit('user-connect', {
+  socket.emit('users', parseUsersList());
+  socket.broadcast.emit('user-connect', {
     id: query.userId,
     name: query.userName,
     image: query.userImage,
