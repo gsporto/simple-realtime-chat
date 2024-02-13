@@ -10,11 +10,15 @@ import {
 import { io } from 'socket.io-client';
 import { User } from '@repo/types';
 
+const SESSION_CURRENT_USER_KEY = '@chat-user';
+const SESSION_USERS_MESSAGES_KEY = '@chat-users-messages';
+
 type UserMessageProviderProps = {
   children: ReactNode;
 };
 
 type Messages = {
+  id: string;
   type: 'sended' | 'received';
   userId: string;
   text: string;
@@ -45,18 +49,35 @@ export function UserMessageProvider({ children }: UserMessageProviderProps) {
   const firstRender = useRef(true);
 
   const [currentUser, setCurrentUser] = useState<User>(() => {
-    const id = sessionStorage.getItem('userId') || Date.now().toString();
-    sessionStorage.setItem('userId', id);
-    return {
+    const sessionUser = sessionStorage.getItem(SESSION_CURRENT_USER_KEY);
+
+    if (sessionUser) {
+      return JSON.parse(sessionUser) as User;
+    }
+
+    const id = Date.now().toString();
+    const newUser = {
       id,
-      name: 'a',
+      name: '',
       image: `https://picsum.photos/seed/${id}/250/250`,
     };
+    sessionStorage.setItem(SESSION_CURRENT_USER_KEY, JSON.stringify(newUser));
+    return newUser;
   });
 
   const [usersWithMessages, setUsersWithMessages] = useState<
     Array<UsersWithMessages>
-  >([]);
+  >(() => {
+    const sessionUserWithMessages = sessionStorage.getItem(
+      SESSION_USERS_MESSAGES_KEY,
+    );
+
+    if (sessionUserWithMessages) {
+      return JSON.parse(sessionUserWithMessages) as Array<UsersWithMessages>;
+    }
+
+    return [];
+  });
   const [targetUserId, setTargetUserId] = useState('');
 
   const targetUser = usersWithMessages.find(
@@ -70,22 +91,43 @@ export function UserMessageProvider({ children }: UserMessageProviderProps) {
 
   function sendMessage(text: string) {
     setUsersWithMessages(state => {
-      const userIndex = state.findIndex(value => value.id === targetUserId);
-      if (userIndex < 0) {
-        return state;
-      }
-      const newState = [...state];
-      console.log(newState, userIndex);
-      newState[userIndex].messages.push({
-        type: 'sended',
-        text: text,
-        userId: currentUser.id,
+      return state.map(user => {
+        if (user.id === targetUserId) {
+          return {
+            ...user,
+            messages: [
+              ...user.messages,
+              {
+                id: Date.now().toString(),
+                type: 'sended',
+                text: text,
+                userId: currentUser.id,
+              },
+            ],
+          };
+        }
+        return user;
       });
-      return newState;
     });
 
     socket.emit('new-message', { idTarget: targetUserId, text });
   }
+
+  useEffect(() => {
+    sessionStorage.setItem(
+      SESSION_CURRENT_USER_KEY,
+      JSON.stringify(currentUser),
+    );
+  }, [currentUser]);
+
+  useEffect(() => {
+    if (usersWithMessages.length) {
+      sessionStorage.setItem(
+        SESSION_USERS_MESSAGES_KEY,
+        JSON.stringify(usersWithMessages),
+      );
+    }
+  }, [usersWithMessages]);
 
   useEffect(() => {
     if (firstRender.current && currentUser.name) {
@@ -120,18 +162,23 @@ export function UserMessageProvider({ children }: UserMessageProviderProps) {
 
       socket.on('new-message', data => {
         setUsersWithMessages(state => {
-          const userIndex = state.findIndex(value => value.id === data.userId);
-          if (userIndex < 0) {
-            return state;
-          }
-          const newState = [...state];
-          newState[userIndex].messages.push({
-            type: 'received',
-            text: data.text,
-            userId: data.userId,
+          return state.map(user => {
+            if (user.id === data.userId) {
+              return {
+                ...user,
+                messages: [
+                  ...user.messages,
+                  {
+                    id: data.id,
+                    type: 'received',
+                    text: data.text,
+                    userId: data.userId,
+                  },
+                ],
+              };
+            }
+            return user;
           });
-          console.log(newState);
-          return newState;
         });
       });
     }

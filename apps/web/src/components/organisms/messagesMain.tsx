@@ -7,7 +7,7 @@ function MessagesMain() {
   return (
     <main className="flex flex-col flex-1 space-y-2">
       {targetUser.messages.map(message => (
-        <Message key={message.text} type={message.type} text={message.text} />
+        <Message key={message.id} type={message.type} text={message.text} />
       ))}
     </main>
   );

@@ -59,6 +59,7 @@ io.on('connection', socket => {
     const targetUser = users.get(body.idTarget);
     if (targetUser?.socketId && query.userId) {
       io.to(targetUser.socketId).emit('new-message', {
+        id: Date.now().toString(),
         userId: query.userId,
         text: body.text,
       });
