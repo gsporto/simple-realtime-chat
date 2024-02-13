@@ -1,7 +1,7 @@
 import { cn } from '@/lib/utils';
 import { VariantProps, cva } from 'class-variance-authority';
 
-const messageVariants = cva('border rounded-xl max-w-prose p-2', {
+const messageVariants = cva('border rounded-xl max-w-prose p-2 min-w-20 w-20', {
   variants: {
     type: {
       sended: 'self-end rounded-br-none mr-4 ml-14',

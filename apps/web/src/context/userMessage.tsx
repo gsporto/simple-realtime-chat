@@ -15,21 +15,22 @@ type UserMessageProviderProps = {
 };
 
 type Messages = {
+  type: 'sended' | 'received';
   userId: string;
   text: string;
 };
 
-type MessagesByUsers = {
+type UsersWithMessages = {
   messages: Array<Messages>;
 } & User;
 
 type UserMessageProviderState = {
-  messagesByUser: Array<MessagesByUsers>;
+  usersWithMessages: Array<UsersWithMessages>;
   currentUser: User;
   setCurrentUser: Dispatch<SetStateAction<User>>;
   targetUserId: string;
   setTargetUserId: Dispatch<SetStateAction<string>>;
-  targetUser: User;
+  targetUser: UsersWithMessages;
   sendMessage(text: string): void;
 };
 
@@ -53,18 +54,36 @@ export function UserMessageProvider({ children }: UserMessageProviderProps) {
     };
   });
 
-  const [messagesByUser, setMessagesByUser] = useState<Array<MessagesByUsers>>(
-    [],
-  );
+  const [usersWithMessages, setUsersWithMessages] = useState<
+    Array<UsersWithMessages>
+  >([]);
   const [targetUserId, setTargetUserId] = useState('');
 
-  const targetUser = messagesByUser.find(user => user.id === targetUserId) || {
+  const targetUser = usersWithMessages.find(
+    user => user.id === targetUserId,
+  ) || {
     id: '',
     image: '',
     name: '',
+    messages: [],
   };
 
   function sendMessage(text: string) {
+    setUsersWithMessages(state => {
+      const userIndex = state.findIndex(value => value.id === targetUserId);
+      if (userIndex < 0) {
+        return state;
+      }
+      const newState = [...state];
+      console.log(newState, userIndex);
+      newState[userIndex].messages.push({
+        type: 'sended',
+        text: text,
+        userId: currentUser.id,
+      });
+      return newState;
+    });
+
     socket.emit('new-message', { idTarget: targetUserId, text });
   }
 
@@ -80,15 +99,40 @@ export function UserMessageProvider({ children }: UserMessageProviderProps) {
       socket.connect();
 
       socket.on('users', (data: Array<User>) => {
-        setMessagesByUser(
+        setUsersWithMessages(
           data
             .map(value => ({ ...value, messages: [] }))
             .filter(value => value.id !== currentUser.id),
         );
       });
 
+      socket.on('user-connect', (data: User) => {
+        if (data.id !== currentUser.id) {
+          setUsersWithMessages(state => {
+            const findedUser = state.find(user => user.id === data.id);
+            if (findedUser) {
+              return state;
+            }
+            return [...state, { ...data, messages: [] }];
+          });
+        }
+      });
+
       socket.on('new-message', data => {
-        console.log(data);
+        setUsersWithMessages(state => {
+          const userIndex = state.findIndex(value => value.id === data.userId);
+          if (userIndex < 0) {
+            return state;
+          }
+          const newState = [...state];
+          newState[userIndex].messages.push({
+            type: 'received',
+            text: data.text,
+            userId: data.userId,
+          });
+          console.log(newState);
+          return newState;
+        });
       });
     }
     return () => {
@@ -101,7 +145,7 @@ export function UserMessageProvider({ children }: UserMessageProviderProps) {
   return (
     <UserMessageProviderContext.Provider
       value={{
-        messagesByUser,
+        usersWithMessages,
         currentUser,
         setCurrentUser,
         targetUserId,

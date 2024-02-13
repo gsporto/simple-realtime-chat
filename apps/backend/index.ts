@@ -48,7 +48,12 @@ io.on('connection', socket => {
     userName: query.userName,
   });
 
-  io.emit('users', parseUsersList());
+  io.to(socket.id).emit('users', parseUsersList());
+  socket.emit('user-connect', {
+    id: query.userId,
+    name: query.userName,
+    image: query.userImage,
+  });
 
   socket.on('new-message', body => {
     const targetUser = users.get(body.idTarget);
@@ -62,6 +67,10 @@ io.on('connection', socket => {
 
   socket.on('disconnect', () => {
     users.delete(socket.handshake.query.userId as string);
-    io.emit('users', parseUsersList());
+    socket.emit('user-disconnect', {
+      id: query.userId,
+      name: query.userName,
+      image: query.userImage,
+    });
   });
 });
