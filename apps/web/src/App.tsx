@@ -4,6 +4,7 @@ import {
   MessagesMain,
   UserList,
   UsersHeader,
+  UserEditDialog,
 } from './components';
 import { useUserMessage } from './hooks';
 import { useMediaQuery } from 'usehooks-ts';
@@ -16,28 +17,31 @@ function App() {
   const isMessageVisible = isLg || targetUserId;
 
   return (
-    <div className="flex h-lvh">
-      {isUsersVisible && (
-        <div className={'flex flex-1 flex-col'}>
-          <UsersHeader />
-          <UserList />
-        </div>
-      )}
+    <>
+      <div className="flex h-lvh">
+        {isUsersVisible && (
+          <div className={'flex flex-1 flex-col'}>
+            <UsersHeader />
+            <UserList />
+          </div>
+        )}
 
-      {isUsersVisible && isMessageVisible && <div className="border-l"></div>}
+        {isUsersVisible && isMessageVisible && <div className="border-l"></div>}
 
-      {isMessageVisible && (
-        <div className={'flex flex-[2] flex-col'}>
-          {Boolean(targetUserId) && (
-            <>
-              <MessagesHeader />
-              <MessagesMain />
-              <MessagesFooter />
-            </>
-          )}
-        </div>
-      )}
-    </div>
+        {isMessageVisible && (
+          <div className={'flex flex-[2] flex-col'}>
+            {Boolean(targetUserId) && (
+              <>
+                <MessagesHeader />
+                <MessagesMain />
+                <MessagesFooter />
+              </>
+            )}
+          </div>
+        )}
+      </div>
+      <UserEditDialog />
+    </>
   );
 }
 
