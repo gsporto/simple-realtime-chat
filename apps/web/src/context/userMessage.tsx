@@ -21,6 +21,7 @@ type UserMessageProviderState = {
   selectedUserId: string;
   setSelectedUserId: Dispatch<SetStateAction<string>>;
   selectedUser: User;
+  sendMessage(text: string): void;
 };
 
 export const UserMessageProviderContext =
@@ -52,6 +53,10 @@ export function UserMessageProvider({ children }: UserMessageProviderProps) {
     name: '',
   };
 
+  function sendMessage(text: string) {
+    socket.emit('new-message', { idTarget: selectedUserId, text });
+  }
+
   useEffect(() => {
     if (firstRender.current && user.name) {
       firstRender.current = false;
@@ -70,6 +75,10 @@ export function UserMessageProvider({ children }: UserMessageProviderProps) {
           }),
         );
       });
+
+      socket.on('new-message', data => {
+        console.log(data);
+      });
     }
     return () => {
       if (firstRender.current) {
@@ -87,6 +96,7 @@ export function UserMessageProvider({ children }: UserMessageProviderProps) {
         selectedUserId,
         setSelectedUserId,
         selectedUser,
+        sendMessage,
       }}
     >
       {children}
