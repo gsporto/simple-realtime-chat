@@ -9,11 +9,11 @@ import { useUserMessage } from './hooks';
 import { useMediaQuery } from 'usehooks-ts';
 
 function App() {
-  const { selectedUserId } = useUserMessage();
+  const { targetUserId } = useUserMessage();
   const isLg = useMediaQuery('(min-width: 1024px)');
 
-  const isUsersVisible = isLg || !selectedUserId;
-  const isMessageVisible = isLg || selectedUserId;
+  const isUsersVisible = isLg || !targetUserId;
+  const isMessageVisible = isLg || targetUserId;
 
   return (
     <div className="flex h-lvh">
@@ -28,7 +28,7 @@ function App() {
 
       {isMessageVisible && (
         <div className={'flex flex-[2] flex-col'}>
-          {Boolean(selectedUserId) && (
+          {Boolean(targetUserId) && (
             <>
               <MessagesHeader />
               <MessagesMain />

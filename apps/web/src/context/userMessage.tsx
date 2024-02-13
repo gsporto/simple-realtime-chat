@@ -14,13 +14,22 @@ type UserMessageProviderProps = {
   children: ReactNode;
 };
 
+type Messages = {
+  userId: string;
+  text: string;
+};
+
+type MessagesByUsers = {
+  messages: Array<Messages>;
+} & User;
+
 type UserMessageProviderState = {
-  usersList: Array<User>;
-  user: User;
-  setUser: Dispatch<SetStateAction<User>>;
-  selectedUserId: string;
-  setSelectedUserId: Dispatch<SetStateAction<string>>;
-  selectedUser: User;
+  messagesByUser: Array<MessagesByUsers>;
+  currentUser: User;
+  setCurrentUser: Dispatch<SetStateAction<User>>;
+  targetUserId: string;
+  setTargetUserId: Dispatch<SetStateAction<string>>;
+  targetUser: User;
   sendMessage(text: string): void;
 };
 
@@ -34,7 +43,7 @@ const socket = io('localhost:3000', {
 export function UserMessageProvider({ children }: UserMessageProviderProps) {
   const firstRender = useRef(true);
 
-  const [user, setUser] = useState<User>(() => {
+  const [currentUser, setCurrentUser] = useState<User>(() => {
     const id = sessionStorage.getItem('userId') || Date.now().toString();
     sessionStorage.setItem('userId', id);
     return {
@@ -44,35 +53,37 @@ export function UserMessageProvider({ children }: UserMessageProviderProps) {
     };
   });
 
-  const [usersList, setUsersList] = useState<Array<User>>([]);
-  const [selectedUserId, setSelectedUserId] = useState('');
+  const [messagesByUser, setMessagesByUser] = useState<Array<MessagesByUsers>>(
+    [],
+  );
+  const [targetUserId, setTargetUserId] = useState('');
 
-  const selectedUser = usersList.find(user => user.id === selectedUserId) || {
+  const targetUser = messagesByUser.find(user => user.id === targetUserId) || {
     id: '',
     image: '',
     name: '',
   };
 
   function sendMessage(text: string) {
-    socket.emit('new-message', { idTarget: selectedUserId, text });
+    socket.emit('new-message', { idTarget: targetUserId, text });
   }
 
   useEffect(() => {
-    if (firstRender.current && user.name) {
+    if (firstRender.current && currentUser.name) {
       firstRender.current = false;
 
       socket.io.opts.query = {
-        userId: user.id,
-        userName: user.name,
-        userImage: user.image,
+        userId: currentUser.id,
+        userName: currentUser.name,
+        userImage: currentUser.image,
       };
       socket.connect();
 
       socket.on('users', (data: Array<User>) => {
-        setUsersList(
-          data.filter(value => {
-            return value.id !== user.id;
-          }),
+        setMessagesByUser(
+          data
+            .map(value => ({ ...value, messages: [] }))
+            .filter(value => value.id !== currentUser.id),
         );
       });
 
@@ -85,17 +96,17 @@ export function UserMessageProvider({ children }: UserMessageProviderProps) {
         socket.off('users');
       }
     };
-  }, [user.id, user.image, user.name]);
+  }, [currentUser.id, currentUser.image, currentUser.name]);
 
   return (
     <UserMessageProviderContext.Provider
       value={{
-        usersList,
-        user,
-        setUser,
-        selectedUserId,
-        setSelectedUserId,
-        selectedUser,
+        messagesByUser,
+        currentUser,
+        setCurrentUser,
+        targetUserId,
+        setTargetUserId,
+        targetUser,
         sendMessage,
       }}
     >

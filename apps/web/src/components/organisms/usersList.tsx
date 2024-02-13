@@ -2,26 +2,22 @@ import { User } from '../ui/user';
 import { useUserMessage } from '@/hooks';
 
 function UserList() {
-  const {
-    usersList,
-    selectedUserId: selectedUser,
-    setSelectedUserId: setSelectedUser,
-  } = useUserMessage();
+  const { messagesByUser, targetUserId, setTargetUserId } = useUserMessage();
 
   function handleSelect(id: string) {
-    setSelectedUser(id);
+    setTargetUserId(id);
   }
 
   return (
     <div>
-      {usersList.map(user => (
+      {messagesByUser.map(user => (
         <User
           key={user.id}
           name={user.name}
           image={user.image}
           text="Nunc ut euismod est, at lacinia risus."
           date="Yesterday"
-          select={selectedUser === user.id}
+          select={targetUserId === user.id}
           onClick={() => handleSelect(user.id)}
         />
       ))}
