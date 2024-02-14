@@ -26,12 +26,14 @@ function User({ name, image, date, text, select, onClick }: UserProp) {
         <AvatarFallback>CN</AvatarFallback>
       </Avatar>
 
-      <div className="flex-1">
+      <div className="flex-1 overflow-hidden">
         <div className="flex justify-between">
           <p className="text-lg">{name}</p>
           <p className="text-sm opacity-75">{date}</p>
         </div>
-        <p className="text-sm opacity-75">{text}</p>
+        <p className="text-sm opacity-75 overflow-hidden text-ellipsis">
+          {text}
+        </p>
       </div>
     </div>
   );

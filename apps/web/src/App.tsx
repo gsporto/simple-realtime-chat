@@ -21,7 +21,7 @@ function App() {
     <>
       <div className="flex h-lvh">
         {isUsersVisible && (
-          <div className={'flex flex-1 flex-col'}>
+          <div className={'flex flex-1 flex-col overflow-hidden'}>
             <UsersHeader />
             <UserList />
           </div>
