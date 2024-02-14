@@ -7,8 +7,13 @@ import {
   useRef,
   useState,
 } from 'react';
-import { io } from 'socket.io-client';
-import { User } from '@repo/types';
+import { type Socket, io } from 'socket.io-client';
+import {
+  ClientToServerEvents,
+  ServerToClientEvents,
+  User,
+  UserWithMessages,
+} from '@repo/types';
 
 const SESSION_CURRENT_USER_KEY = '@chat-user';
 const SESSION_USERS_MESSAGES_KEY = '@chat-users-messages';
@@ -17,33 +22,25 @@ type UserMessageProviderProps = {
   children: ReactNode;
 };
 
-type Messages = {
-  id: string;
-  type: 'sended' | 'received';
-  userId: string;
-  text: string;
-};
-
-type UsersWithMessages = {
-  messages: Array<Messages>;
-} & User;
-
 type UserMessageProviderState = {
-  usersWithMessages: Array<UsersWithMessages>;
+  usersWithMessages: Array<UserWithMessages>;
   currentUser: User;
   setCurrentUser: Dispatch<SetStateAction<User>>;
   targetUserId: string;
   setTargetUserId: Dispatch<SetStateAction<string>>;
-  targetUser: UsersWithMessages;
+  targetUser: UserWithMessages;
   sendMessage(text: string): void;
 };
 
 export const UserMessageProviderContext =
   createContext<UserMessageProviderState>({} as UserMessageProviderState);
 
-const socket = io('localhost:3000', {
-  autoConnect: false,
-});
+const socket: Socket<ServerToClientEvents, ClientToServerEvents> = io(
+  'localhost:3000',
+  {
+    autoConnect: false,
+  },
+);
 
 export function UserMessageProvider({ children }: UserMessageProviderProps) {
   const firstRender = useRef(true);
@@ -66,14 +63,14 @@ export function UserMessageProvider({ children }: UserMessageProviderProps) {
   });
 
   const [usersWithMessages, setUsersWithMessages] = useState<
-    Array<UsersWithMessages>
+    Array<UserWithMessages>
   >(() => {
     const sessionUserWithMessages = sessionStorage.getItem(
       SESSION_USERS_MESSAGES_KEY,
     );
 
     if (sessionUserWithMessages) {
-      return JSON.parse(sessionUserWithMessages) as Array<UsersWithMessages>;
+      return JSON.parse(sessionUserWithMessages) as Array<UserWithMessages>;
     }
 
     return [];
@@ -90,6 +87,7 @@ export function UserMessageProvider({ children }: UserMessageProviderProps) {
   };
 
   function sendMessage(text: string) {
+    const id = Date.now().toString();
     setUsersWithMessages(state => {
       return state.map(user => {
         if (user.id === targetUserId) {
@@ -98,10 +96,11 @@ export function UserMessageProvider({ children }: UserMessageProviderProps) {
             messages: [
               ...user.messages,
               {
-                id: Date.now().toString(),
+                id,
                 type: 'sended',
                 text: text,
                 userId: currentUser.id,
+                createdAt: Date.now().toString(),
               },
             ],
           };
@@ -110,7 +109,12 @@ export function UserMessageProvider({ children }: UserMessageProviderProps) {
       });
     });
 
-    socket.emit('new-message', { idTarget: targetUserId, text });
+    socket.emit('send-message', {
+      id,
+      idTarget: targetUserId,
+      text,
+      createdAt: Date.now().toString(),
+    });
   }
 
   useEffect(() => {
@@ -140,7 +144,7 @@ export function UserMessageProvider({ children }: UserMessageProviderProps) {
       };
       socket.connect();
 
-      socket.on('users', (data: Array<User>) => {
+      socket.on('users', data => {
         setUsersWithMessages(state => {
           return data
             .map(value => ({
@@ -151,7 +155,7 @@ export function UserMessageProvider({ children }: UserMessageProviderProps) {
         });
       });
 
-      socket.on('user-connect', (data: User) => {
+      socket.on('user-connect', data => {
         if (data.id !== currentUser.id) {
           setUsersWithMessages(state => {
             const findedUser = state.find(user => user.id === data.id);
@@ -176,6 +180,7 @@ export function UserMessageProvider({ children }: UserMessageProviderProps) {
                     type: 'received',
                     text: data.text,
                     userId: data.userId,
+                    createdAt: data.createdAt,
                   },
                 ],
               };

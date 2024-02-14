@@ -1,6 +1,10 @@
 import express from 'express';
 import { createServer } from 'node:http';
 import { Server } from 'socket.io';
+import {
+  ClientToServerEvents,
+  ServerToClientEvents,
+} from '@repo/types';
 
 type Query = {
   userId: string;
@@ -19,7 +23,10 @@ const port = process.env.PORT || 3000;
 
 const app = express();
 const server = createServer(app);
-const io = new Server(server, {
+const io = new Server<
+  ClientToServerEvents,
+  ServerToClientEvents
+>(server, {
   cors: {
     origin: '*',
   },
@@ -55,13 +62,14 @@ io.on('connection', socket => {
     image: query.userImage,
   });
 
-  socket.on('new-message', body => {
+  socket.on('send-message', body => {
     const targetUser = users.get(body.idTarget);
     if (targetUser?.socketId && query.userId) {
       io.to(targetUser.socketId).emit('new-message', {
-        id: Date.now().toString(),
-        userId: query.userId,
+        id: body.id,
         text: body.text,
+        createdAt: body.createdAt,
+        userId: query.userId
       });
     }
   });
