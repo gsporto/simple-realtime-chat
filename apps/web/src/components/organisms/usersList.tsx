@@ -12,7 +12,7 @@ function UserList() {
     <>
       {usersWithMessages.length ? (
         <div className="flex-1 overflow-auto">
-          {usersWithMessages.map(user => (
+          {usersWithMessages.map((user) => (
             <User
               key={user.id}
               name={user.name}

@@ -50,7 +50,7 @@ function UserEditDialog() {
               <Input
                 id="name"
                 value={name}
-                onChange={e => {
+                onChange={(e) => {
                   setName(e.currentTarget.value);
                 }}
                 className="col-span-3"

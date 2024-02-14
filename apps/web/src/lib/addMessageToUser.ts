@@ -13,7 +13,7 @@ export function addMessageToUser({
   createdAt,
 }: AddMessageToUserProps) {
   return (state: Array<UserWithMessages>) => {
-    return state.map(user => {
+    return state.map((user) => {
       if (user.id === userIdToAddMessage) {
         return {
           ...user,

@@ -63,7 +63,7 @@ export function UserMessageProvider({ children }: UserMessageProviderProps) {
 
   const [targetUserId, setTargetUserId] = useState('');
 
-  const targetUser = usersWithMessages.find(user => user.id === targetUserId);
+  const targetUser = usersWithMessages.find((user) => user.id === targetUserId);
 
   function sendMessage(text: string) {
     const id = Date.now().toString();
@@ -99,21 +99,21 @@ export function UserMessageProvider({ children }: UserMessageProviderProps) {
       };
       socket.connect();
 
-      socket.on('users', data => {
-        setUsersWithMessages(state => {
+      socket.on('users', (data) => {
+        setUsersWithMessages((state) => {
           return data
-            .map(value => ({
+            .map((value) => ({
               ...value,
-              messages: state.find(x => x.id === value.id)?.messages || [],
+              messages: state.find((x) => x.id === value.id)?.messages || [],
             }))
-            .filter(value => value.id !== currentUser.id);
+            .filter((value) => value.id !== currentUser.id);
         });
       });
 
-      socket.on('user-connect', data => {
+      socket.on('user-connect', (data) => {
         if (data.id !== currentUser.id) {
-          setUsersWithMessages(state => {
-            const findedUser = state.find(user => user.id === data.id);
+          setUsersWithMessages((state) => {
+            const findedUser = state.find((user) => user.id === data.id);
             if (findedUser) {
               return state;
             }
