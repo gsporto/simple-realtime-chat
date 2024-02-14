@@ -1,11 +1,11 @@
 import { cn } from '@/lib/utils';
-import { VariantProps, cva } from 'class-variance-authority';
+import { cva } from 'class-variance-authority';
 
-const messageVariants = cva('border rounded-xl max-w-prose p-2 min-w-20 w-20', {
+const messageContainerVariants = cva('flex flex-shrink-0', {
   variants: {
     type: {
-      sended: 'self-end rounded-br-none mr-4 ml-14',
-      received: 'rounded-bl-none ml-4 mr-14',
+      sended: 'justify-end',
+      received: '',
     },
   },
   defaultVariants: {
@@ -13,15 +13,32 @@ const messageVariants = cva('border rounded-xl max-w-prose p-2 min-w-20 w-20', {
   },
 });
 
-type messageProps = {
-  className?: string;
-  text?: string;
-} & VariantProps<typeof messageVariants>;
+const messageVariants = cva(
+  'border rounded-xl p-2 min-w-20 break-words max-w-prose',
+  {
+    variants: {
+      type: {
+        sended: 'rounded-br-none mr-4 ml-16',
+        received: 'rounded-bl-none ml-4 mr-16',
+      },
+    },
+    defaultVariants: {
+      type: 'sended',
+    },
+  },
+);
 
-function Message({ text, className, type }: messageProps) {
+type messageProps = {
+  text?: string;
+  type: 'sended' | 'received';
+};
+
+function Message({ text, type }: messageProps) {
   return (
-    <div className={cn(messageVariants({ type }), className)}>
-      <p>{text}</p>
+    <div className={cn(messageContainerVariants({ type }))}>
+      <div className={cn(messageVariants({ type }))}>
+        <p>{text}</p>
+      </div>
     </div>
   );
 }

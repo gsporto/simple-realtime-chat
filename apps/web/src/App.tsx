@@ -30,7 +30,7 @@ function App() {
         {isUsersVisible && isMessageVisible && <div className="border-l"></div>}
 
         {isMessageVisible && (
-          <div className={'flex flex-1 flex-col 2xl:flex-[2]'}>
+          <div className={'flex flex-1 flex-col 2xl:flex-[2] overflow-hidden'}>
             {targetUserId ? (
               <>
                 <MessagesHeader />
