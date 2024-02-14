@@ -141,11 +141,14 @@ export function UserMessageProvider({ children }: UserMessageProviderProps) {
       socket.connect();
 
       socket.on('users', (data: Array<User>) => {
-        setUsersWithMessages(
-          data
-            .map(value => ({ ...value, messages: [] }))
-            .filter(value => value.id !== currentUser.id),
-        );
+        setUsersWithMessages(state => {
+          return data
+            .map(value => ({
+              ...value,
+              messages: state.find(x => x.id === value.id)?.messages || [],
+            }))
+            .filter(value => value.id !== currentUser.id);
+        });
       });
 
       socket.on('user-connect', (data: User) => {
