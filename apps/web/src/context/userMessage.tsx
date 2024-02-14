@@ -68,17 +68,16 @@ export function UserMessageProvider({ children }: UserMessageProviderProps) {
   function sendMessage(text: string) {
     const id = Date.now().toString();
     const createdAt = Date.now().toString();
-    setUsersWithMessages(state => {
-      return addMessageToUser({
+    setUsersWithMessages(
+      addMessageToUser({
         userIdToAddMessage: targetUserId,
-        state,
         id,
         text,
         createdAt,
         type: 'sended',
         userId: currentUser.id,
-      });
-    });
+      }),
+    );
 
     socket.emit('send-message', {
       id,
@@ -124,17 +123,16 @@ export function UserMessageProvider({ children }: UserMessageProviderProps) {
       });
 
       socket.on('new-message', ({ id, text, userId, createdAt }) => {
-        setUsersWithMessages(state => {
-          return addMessageToUser({
+        setUsersWithMessages(
+          addMessageToUser({
             userIdToAddMessage: userId,
-            state,
             id,
             text,
             createdAt,
             userId,
             type: 'received',
-          });
-        });
+          }),
+        );
       });
     }
     return () => {
