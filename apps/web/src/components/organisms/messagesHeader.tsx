@@ -5,6 +5,7 @@ import { Button } from '../ui/button';
 
 function MessagesHeader() {
   const { setTargetUserId, targetUser } = useUserMessage();
+  if (!targetUser) return null;
   return (
     <header className="flex items-center h-16 space-x-3 px-3 border-b">
       <Button variant="ghost" size="icon">

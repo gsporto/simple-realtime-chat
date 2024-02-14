@@ -2,11 +2,7 @@ import { User } from '../ui/user';
 import { useUserMessage } from '@/hooks';
 
 function UserList() {
-  const {
-    usersWithMessages: messagesByUser,
-    targetUserId,
-    setTargetUserId,
-  } = useUserMessage();
+  const { usersWithMessages, targetUserId, setTargetUserId } = useUserMessage();
 
   function handleSelect(id: string) {
     setTargetUserId(id);
@@ -14,9 +10,9 @@ function UserList() {
 
   return (
     <>
-      {messagesByUser.length ? (
+      {usersWithMessages.length ? (
         <div className="flex-1 overflow-auto">
-          {messagesByUser.map(user => (
+          {usersWithMessages.map(user => (
             <User
               key={user.id}
               name={user.name}

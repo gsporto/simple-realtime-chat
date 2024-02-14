@@ -1,3 +1,10 @@
+import { addMessageToUser } from '@/lib/addMessageToUser';
+import type {
+  ClientToServerEvents,
+  ServerToClientEvents,
+  User,
+  UserWithMessages,
+} from '@repo/types';
 import {
   Dispatch,
   ReactNode,
@@ -7,16 +14,8 @@ import {
   useRef,
   useState,
 } from 'react';
-import { type Socket, io } from 'socket.io-client';
-import {
-  ClientToServerEvents,
-  ServerToClientEvents,
-  User,
-  UserWithMessages,
-} from '@repo/types';
-
-const SESSION_CURRENT_USER_KEY = '@chat-user';
-const SESSION_USERS_MESSAGES_KEY = '@chat-users-messages';
+import { io, type Socket } from 'socket.io-client';
+import { useSessionStorage } from 'usehooks-ts';
 
 type UserMessageProviderProps = {
   children: ReactNode;
@@ -28,8 +27,17 @@ type UserMessageProviderState = {
   setCurrentUser: Dispatch<SetStateAction<User>>;
   targetUserId: string;
   setTargetUserId: Dispatch<SetStateAction<string>>;
-  targetUser: UserWithMessages;
+  targetUser: UserWithMessages | undefined;
   sendMessage(text: string): void;
+};
+
+const CURRENT_USER_KEY = '@chat-user';
+const USERS_MESSAGES_KEY = '@chat-users-messages';
+const DefaultUserId = Date.now().toString();
+const DefaultUser = {
+  id: DefaultUserId,
+  name: '',
+  image: `https://picsum.photos/seed/${DefaultUserId}/250/250`,
 };
 
 export const UserMessageProviderContext =
@@ -44,94 +52,42 @@ const socket: Socket<ServerToClientEvents, ClientToServerEvents> = io(
 
 export function UserMessageProvider({ children }: UserMessageProviderProps) {
   const firstRender = useRef(true);
+  const [currentUser, setCurrentUser] = useSessionStorage<User>(
+    CURRENT_USER_KEY,
+    DefaultUser,
+  );
 
-  const [currentUser, setCurrentUser] = useState<User>(() => {
-    const sessionUser = sessionStorage.getItem(SESSION_CURRENT_USER_KEY);
-
-    if (sessionUser) {
-      return JSON.parse(sessionUser) as User;
-    }
-
-    const id = Date.now().toString();
-    const newUser = {
-      id,
-      name: '',
-      image: `https://picsum.photos/seed/${id}/250/250`,
-    };
-    sessionStorage.setItem(SESSION_CURRENT_USER_KEY, JSON.stringify(newUser));
-    return newUser;
-  });
-
-  const [usersWithMessages, setUsersWithMessages] = useState<
+  const [usersWithMessages, setUsersWithMessages] = useSessionStorage<
     Array<UserWithMessages>
-  >(() => {
-    const sessionUserWithMessages = sessionStorage.getItem(
-      SESSION_USERS_MESSAGES_KEY,
-    );
+  >(USERS_MESSAGES_KEY, []);
 
-    if (sessionUserWithMessages) {
-      return JSON.parse(sessionUserWithMessages) as Array<UserWithMessages>;
-    }
-
-    return [];
-  });
   const [targetUserId, setTargetUserId] = useState('');
 
-  const targetUser = usersWithMessages.find(
-    user => user.id === targetUserId,
-  ) || {
-    id: '',
-    image: '',
-    name: '',
-    messages: [],
-  };
+  const targetUser = usersWithMessages.find(user => user.id === targetUserId);
 
   function sendMessage(text: string) {
     const id = Date.now().toString();
+    const createdAt = Date.now().toString();
     setUsersWithMessages(state => {
-      return state.map(user => {
-        if (user.id === targetUserId) {
-          return {
-            ...user,
-            messages: [
-              ...user.messages,
-              {
-                id,
-                type: 'sended',
-                text: text,
-                userId: currentUser.id,
-                createdAt: Date.now().toString(),
-              },
-            ],
-          };
-        }
-        return user;
+      return addMessageToUser({
+        userIdToAddMessage: targetUserId,
+        state,
+        id,
+        text,
+        createdAt,
+        type: 'sended',
+        userId: currentUser.id,
       });
     });
 
     socket.emit('send-message', {
       id,
-      idTarget: targetUserId,
+      targetUserId,
       text,
-      createdAt: Date.now().toString(),
+      createdAt,
+      userId: currentUser.id,
     });
   }
-
-  useEffect(() => {
-    sessionStorage.setItem(
-      SESSION_CURRENT_USER_KEY,
-      JSON.stringify(currentUser),
-    );
-  }, [currentUser]);
-
-  useEffect(() => {
-    if (usersWithMessages.length) {
-      sessionStorage.setItem(
-        SESSION_USERS_MESSAGES_KEY,
-        JSON.stringify(usersWithMessages),
-      );
-    }
-  }, [usersWithMessages]);
 
   useEffect(() => {
     if (firstRender.current && currentUser.name) {
@@ -167,25 +123,16 @@ export function UserMessageProvider({ children }: UserMessageProviderProps) {
         }
       });
 
-      socket.on('new-message', data => {
+      socket.on('new-message', ({ id, text, userId, createdAt }) => {
         setUsersWithMessages(state => {
-          return state.map(user => {
-            if (user.id === data.userId) {
-              return {
-                ...user,
-                messages: [
-                  ...user.messages,
-                  {
-                    id: data.id,
-                    type: 'received',
-                    text: data.text,
-                    userId: data.userId,
-                    createdAt: data.createdAt,
-                  },
-                ],
-              };
-            }
-            return user;
+          return addMessageToUser({
+            userIdToAddMessage: userId,
+            state,
+            id,
+            text,
+            createdAt,
+            userId,
+            type: 'received',
           });
         });
       });
@@ -195,7 +142,12 @@ export function UserMessageProvider({ children }: UserMessageProviderProps) {
         socket.off('users');
       }
     };
-  }, [currentUser.id, currentUser.image, currentUser.name]);
+  }, [
+    currentUser.id,
+    currentUser.image,
+    currentUser.name,
+    setUsersWithMessages,
+  ]);
 
   return (
     <UserMessageProviderContext.Provider

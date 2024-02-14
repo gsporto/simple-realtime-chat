@@ -63,13 +63,13 @@ io.on('connection', socket => {
   });
 
   socket.on('send-message', body => {
-    const targetUser = users.get(body.idTarget);
-    if (targetUser?.socketId && query.userId) {
+    const targetUser = users.get(body.targetUserId);
+    if (targetUser?.socketId) {
       io.to(targetUser.socketId).emit('new-message', {
         id: body.id,
         text: body.text,
         createdAt: body.createdAt,
-        userId: query.userId
+        userId: body.userId
       });
     }
   });

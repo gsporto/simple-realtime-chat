@@ -4,19 +4,16 @@ export type User = {
   image: string;
 };
 
-export type SendMessage = {
-  id: string;
-  idTarget: string;
-  text: string;
-  createdAt: string;
-};
-
 export type Message = {
   id: string;
   userId: string;
   text: string;
   createdAt: string;
 };
+
+export type SendMessage = {
+  targetUserId: string;
+} & Message;
 
 export type ClientMessages = {
   type: 'sended' | 'received';
