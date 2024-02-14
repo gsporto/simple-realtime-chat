@@ -1,10 +1,14 @@
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { cn } from '@/lib/utils';
 
+import dayjs from 'dayjs';
+import relativeTime from 'dayjs/plugin/relativeTime';
+dayjs.extend(relativeTime);
+
 type UserProp = {
   name: string;
   image: string;
-  date: string;
+  date?: number;
   text: string;
   select?: boolean;
   onClick?: () => void;
@@ -29,7 +33,9 @@ function User({ name, image, date, text, select, onClick }: UserProp) {
       <div className="flex-1 overflow-hidden">
         <div className="flex justify-between">
           <p className="text-lg">{name}</p>
-          <p className="text-sm opacity-75">{date}</p>
+          <p className="text-sm opacity-75">
+            {date ? dayjs(date).fromNow() : ''}
+          </p>
         </div>
         <p className="text-sm opacity-75 overflow-hidden text-ellipsis">
           {text}

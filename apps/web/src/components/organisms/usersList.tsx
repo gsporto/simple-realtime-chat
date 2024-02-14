@@ -18,7 +18,7 @@ function UserList() {
               name={user.name}
               image={user.image}
               text={user.messages.at(-1)?.text ?? ''}
-              date="Yesterday"
+              date={user.messages.at(-1)?.createdAt}
               select={targetUserId === user.id}
               onClick={() => handleSelect(user.id)}
             />

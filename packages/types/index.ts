@@ -8,7 +8,7 @@ export type Message = {
   id: string;
   userId: string;
   text: string;
-  createdAt: string;
+  createdAt: number;
 };
 
 export type SendMessage = {

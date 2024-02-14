@@ -67,7 +67,7 @@ export function UserMessageProvider({ children }: UserMessageProviderProps) {
 
   function sendMessage(text: string) {
     const id = Date.now().toString();
-    const createdAt = Date.now().toString();
+    const createdAt = Date.now();
     setUsersWithMessages(
       addMessageToUser({
         userIdToAddMessage: targetUserId,
