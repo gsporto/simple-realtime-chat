@@ -6,7 +6,8 @@
     "dev": "turbo dev",
     "lint": "turbo lint",
     "format": "prettier --write \"**/*.{ts,tsx,md}\"",
-    "shadcn-add": "pnpm dlx shadcn-ui@latest add -c apps/web/"
+    "shadcn-add": "pnpm dlx shadcn-ui@latest add -c apps/web/",
+    "preinstall": "npx only-allow pnpm"
   },
   "devDependencies": {
     "@repo/eslint-config": "workspace:*",
